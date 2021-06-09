@@ -3,7 +3,7 @@ from flask import Flask, request, jsonify, render_template
 import pickle
 
 app = Flask(__name__)
-model = pickle.load(open('CustomerCategoryFeatureMod.ft', 'wb'))
+model = pickle.load(open('saved_model', 'wb'))
 
 @app.route('/')
 def home():
