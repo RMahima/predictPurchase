@@ -3,8 +3,7 @@ from flask import Flask, request, jsonify, render_template
 import pickle
 
 app = Flask(__name__)
-model = pickle.load(open('ProfitPredictor.pkl', 'rb'))
-ohe = pickle.load(open('StateEncoder.pkl','rb'))
+model = pickle.load(open('CustomerCategoryFeatureMod.ft', 'wb'))
 
 @app.route('/')
 def home():
@@ -15,17 +14,14 @@ def predict():
     '''
     For rendering results on HTML GUI
     '''
-    rdSpend = float(request.form['rdSpend'])
-    admSpend = float(request.form['admSpend'])
-    markSpend = float(request.form['markSpend'])
-    state = request.form['state']
-    stateEncoded = ohe.transform(np.array([[state]]))
-    finalFeatures = np.concatenate((stateEncoded,np.array([[rdSpend,admSpend,markSpend]])) , axis = 1)
+    age = float(request.form['age'])
+    salary = float(request.form['salary'])
+    finalFeatures = np.array([[age,salary]])
     prediction = model.predict(finalFeatures)
 
     
 
-    return render_template('index.html', prediction_text='Expected Profit from the Startup is  $ {}'.format(round(prediction[0][0])))
+    return render_template('index.html', prediction_text='Given customer is a {} customer'.format(round(prediction[0][0])))
 
 
 if __name__ == "__main__":
