@@ -1,9 +1,12 @@
+  
 import numpy as np
 from flask import Flask, request, jsonify, render_template
 import pickle
+import tensorflow as tf
 
 app = Flask(__name__)
-model = pickle.load(open('saved_model', 'wb'))
+model = tf.keras.models.load_model('SalaryPredictor/')
+scFeatures = pickle.load(open('CustomerCategoryFeatureMod.ft','rb'))
 
 @app.route('/')
 def home():
@@ -14,14 +17,13 @@ def predict():
     '''
     For rendering results on HTML GUI
     '''
-    age = float(request.form['age'])
-    salary = float(request.form['salary'])
-    finalFeatures = np.array([[age,salary]])
-    prediction = model.predict(finalFeatures)
+    age = float(input("Enter age: "))
+    sal = float(input("Enter sal: "))
+    feature = np.array([[age,sal]])
+    stdFeatures = scFeatures.transform(feature)
+    predLabel = model.predict_classes(stdFeatures)
 
-    
-
-    return render_template('index.html', prediction_text='Given customer is a {} customer'.format(round(prediction[0][0])))
+    return render_template('index.html', prediction_text='Given customer is a {} customer'.format('Good' if predLabel[0][0] == 1 else 'Bad'))
 
 
 if __name__ == "__main__":
